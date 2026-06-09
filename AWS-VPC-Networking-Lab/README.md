@@ -1,5 +1,9 @@
 # AWS VPC Networking Lab
 
+
+## Architecture Diagram
+
+![Architecture Diagram](architecture-diagram.png)
 ## Project Overview
 
 Designed and deployed a custom AWS Virtual Private Cloud (VPC) to demonstrate networking, security, and infrastructure concepts commonly used in enterprise cloud environments.
@@ -57,4 +61,22 @@ Private EC2 Application Server
 ## Outcome
 
 Successfully created a multi-tier AWS networking environment demonstrating public-facing and private infrastructure components following cloud networking best practices.
+
+## Project Screenshots
+
+### Apache Web Server Validation
+
+![Apache Website](apache-webpage.png)
+
+### EC2 Instances
+
+![EC2 Instances](ec2-instances.png)
+
+### Public Subnet
+
+![Public Subnet](PublicSubnet.png)
+
+### Private Subnet
+
+![Private Subnet](PrivateSubnet.png)
 
