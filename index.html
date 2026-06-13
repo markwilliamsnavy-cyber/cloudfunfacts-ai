@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cloud Fun Facts Generator</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            margin: 0;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 650px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 24px 60px rgba(31, 41, 55, 0.24);
+        }
+
+        .fact-box {
+            background: #f7fafc;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 20px 0;
+            text-align: left;
+        }
+
+        .label {
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .fact-text {
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+
+        .generate-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.1rem;
+            border-radius: 50px;
+            cursor: pointer;
+        }
+
+        .generate-btn:disabled {
+            cursor: not-allowed;
+            opacity: 0.75;
+        }
+
+        .error {
+            background: #fed7d7;
+            color: #c53030;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+    </style>
+
+</head>
+
+<body>
+    <div class="container">
+        <h1>☁️ Cloud Fun Facts</h1>
+        <p>AI-powered cloud facts using AWS Bedrock</p>
+
+        <div class="fact-box">
+            <div class="label">Original Fact</div>
+            <p class="fact-text" id="originalFact">Click the button below to get a cloud fact.</p>
+        </div>
+
+        <div class="fact-box">
+            <div class="label">AI Fun Fact</div>
+            <p class="fact-text" id="funFact">Your AI-enhanced fact will appear here.</p>
+        </div>
+
+        <button class="generate-btn" id="generateBtn" onclick="getFact()">
+            Generate Fun Fact
+        </button>
+
+        <p style="margin-top: 30px;">
+            Powered by AWS Amplify + API Gateway + Lambda + DynamoDB + Amazon Bedrock Claude
+        </p>
+    </div>
+
+    <script>
+        const API_URL = "https://YOUR_API_ID.execute-api.YOUR_REGION.amazonaws.com/funfact";
+
+        async function getFact() {
+            const btn = document.getElementById("generateBtn");
+            const originalFact = document.getElementById("originalFact");
+            const funFact = document.getElementById("funFact");
+
+            if (API_URL.includes("YOUR_API_ID") || API_URL.includes("YOUR_REGION")) {
+                originalFact.textContent = "API Gateway URL is not configured.";
+                funFact.innerHTML = '<div class="error">Replace API_URL in index.html with your deployed API Gateway endpoint.</div>';
+                return;
+            }
+
+            btn.disabled = true;
+            btn.textContent = "Loading...";
+            originalFact.textContent = "Getting fact from DynamoDB...";
+            funFact.textContent = "Asking Claude to make it fun...";
+
+            try {
+                const response = await fetch(API_URL);
+                const data = await response.json();
+
+                const body = typeof data.body === "string"
+                    ? JSON.parse(data.body)
+                    : data;
+
+                if (!response.ok || body.error) {
+                    throw new Error(body.message || "The API returned an error.");
+                }
+
+                originalFact.textContent = body.original_fact || "No original fact returned.";
+                funFact.textContent = body.fun_fact || "No AI fact returned.";
+            } catch (error) {
+                console.error("Error:", error);
+                originalFact.textContent = "Could not fetch fact.";
+                funFact.innerHTML = '<div class="error">Check your API Gateway route, CORS settings, or Lambda logs.</div>';
+            }
+
+            btn.disabled = false;
+            btn.textContent = "Generate Another Fact";
+        }
+    </script>
+
+</body>
+</html>
